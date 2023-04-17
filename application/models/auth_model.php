@@ -1,16 +1,15 @@
 <?php
 
-class Auth_model extends CI_Model
-{
-	private $_table = "user";
-	const SESSION_KEY = 'user_id';
+class Auth_model extends CI_Model{
+	private $_table = "login";
+	const SESSION_KEY = 'username';
 
 	public function rules()
 	{
 		return [
 			[
 				'field' => 'username',
-				'label' => 'Username or Email',
+				'label' => 'Username',
 				'rules' => 'required'
 			],
 			[
@@ -25,21 +24,21 @@ class Auth_model extends CI_Model
 	{
 		$this->db->where('username', $username);
 		$query = $this->db->get($this->_table);
-		$user = $query->row();
+		$admin = $query->row();
 
 		// cek apakah user sudah terdaftar?
-		if (!$user) {
+		if (!$admin) {
 			return FALSE;
 		}
 
 		// cek apakah passwordnya benar?
-		if (!password_verify($password, $user->password)) {
+		if (!password_verify($password, $admin->password)) {
 			return FALSE;
 		}
 
 		// bikin session
-		$this->session->set_userdata([self::SESSION_KEY => $user->id]);
-		$this->_update_last_login($user->id);
+		$this->session->set_userdata([self::SESSION_KEY => $admin->username]);
+		$this->_update_last_login($admin->username);
 
 		return $this->session->has_userdata(self::SESSION_KEY);
 	}
@@ -51,7 +50,7 @@ class Auth_model extends CI_Model
 		}
 
 		$user_id = $this->session->userdata(self::SESSION_KEY);
-		$query = $this->db->get_where($this->_table, ['id' => $user_id]);
+		$query = $this->db->get_where($this->_table, ['username' => $user_id]);
 		return $query->row();
 	}
 
@@ -61,12 +60,12 @@ class Auth_model extends CI_Model
 		return !$this->session->has_userdata(self::SESSION_KEY);
 	}
 
-	private function _update_last_login($id)
+	private function _update_last_login($username)
 	{
 		$data = [
 			'last_login' => date("Y-m-d H:i:s"),
 		];
 
-		return $this->db->update($this->_table, $data, ['id' => $id]);
+		return $this->db->update($this->_table, $data, ['username' => $username]);
 	}
 }
