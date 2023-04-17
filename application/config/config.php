@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://P3L_Kel3_SI-PPDB-';
+$config['base_url'] = 'http://localhost/P3L_Kel3_SI-PPDB-/';
 
 /*
 |--------------------------------------------------------------------------
